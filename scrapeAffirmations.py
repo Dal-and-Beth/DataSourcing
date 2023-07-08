@@ -3,13 +3,15 @@ from bs4 import BeautifulSoup
 import requests
 import json
 import pandas as pd
+from selenium import webdriver
+
 
 URL1 = "https://www.scienceofpeople.com/positive-affirmations/"
 URL2 = "https://www.skillshare.com/en/blog/160-positive-affirmations-for-all-aspects-of-your-life/"
 URL3 = "https://www.thegoodtrade.com/features/positive-affirmations-morning-routine/"
 
 
-def firstUrlScrape():
+def scrape270():
     page = requests.get(URL1)
 
     soup = BeautifulSoup(page.content, "html.parser")
@@ -27,6 +29,8 @@ def firstUrlScrape():
     for index, i in enumerate(affirmations):
         lis = i.find_all("li")
         lis = [li.text for li in lis]
+        lis = [li.replace("\xa0", "") for li in lis]
+
         # print(lis)
         affirmationsDict[topics[index].text] = lis
         # for il in ils:
@@ -37,20 +41,37 @@ def firstUrlScrape():
         # print(j.text, end=" ")
     a = pd.DataFrame(affirmationsDict)
     # print(a)
-    a.to_excel("Affirmations.xlsx")
+    a.to_excel("270Affirmations.xlsx")
 
 
-firstUrlScrape()
-# with open("affirmations.txt", "w") as file:
-#     file.write(json.dumps(affirmationsDict))
-# print(affirmationsDict.pop(len(affirmationsDict) - 1))
-# print(affirmationsDict)
-# print(len(topics))
-# print(len(affirmations))
-# print(results.prettify())
-# for i in affirmations:
-# topic = i.find("h3")
+def scrape160():
+    dr = webdriver.Chrome()
+    dr.get(URL2)
+    soup = BeautifulSoup(dr.page_source, "html.parser")
+    # page = requests.get(URL2)
 
-# print(page.text)
+    # soup = BeautifulSoup(page.content, "html.parser")
+    results = soup.find("div", class_="css-svxum1")
+    topics = results.find_all("h2", class_="wp-block-heading")
+    affirmations = results.find_all("ol")
+    del topics[-3:]
+    del topics[:2]
+    print(len(topics), len(affirmations))
+    # print(topics)
+    affirmationsDict = {}
+    for index, i in enumerate(affirmations):
+        lis = i.find_all("li")
+        lis = [li.text for li in lis]
+        lis = [li.replace("\xa0", "") for li in lis]
 
-# BeautifulSoup.
+        affirmationsDict[topics[index].text] = lis
+    df = pd.DataFrame.from_dict(affirmationsDict, orient="index")
+    a = df.transpose()
+    print(a)
+    # a = pd.DataFrame(affirmationsDict)
+    # print(a)
+    a.to_excel("160Affirmations.xlsx")
+
+
+scrape270()
+scrape160()
