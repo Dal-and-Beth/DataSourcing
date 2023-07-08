@@ -16,13 +16,10 @@ def scrape270():
 
     soup = BeautifulSoup(page.content, "html.parser")
     results = soup.find(id="post-279007")
-    # affirmations = results.find_all("div", class_="entry-content")
 
     topics = results.find_all("h3")
     affirmations = results.find_all("ol")
     affirmations.pop()
-    # li = results.find("")/
-    # li = affirmations.
 
     affirmationsDict = {}
 
@@ -31,16 +28,8 @@ def scrape270():
         lis = [li.text for li in lis]
         lis = [li.replace("\xa0", "") for li in lis]
 
-        # print(lis)
         affirmationsDict[topics[index].text] = lis
-        # for il in ils:
-        #     affirmationsDict[index] = il
-
-        # print(il.text, end=" ")
-        # print(index)
-        # print(j.text, end=" ")
     a = pd.DataFrame(affirmationsDict)
-    # print(a)
     a.to_excel("270Affirmations.xlsx")
 
 
@@ -48,16 +37,12 @@ def scrape160():
     dr = webdriver.Chrome()
     dr.get(URL2)
     soup = BeautifulSoup(dr.page_source, "html.parser")
-    # page = requests.get(URL2)
-
-    # soup = BeautifulSoup(page.content, "html.parser")
     results = soup.find("div", class_="css-svxum1")
     topics = results.find_all("h2", class_="wp-block-heading")
     affirmations = results.find_all("ol")
     del topics[-3:]
     del topics[:2]
     print(len(topics), len(affirmations))
-    # print(topics)
     affirmationsDict = {}
     for index, i in enumerate(affirmations):
         lis = i.find_all("li")
@@ -68,8 +53,6 @@ def scrape160():
     df = pd.DataFrame.from_dict(affirmationsDict, orient="index")
     a = df.transpose()
     print(a)
-    # a = pd.DataFrame(affirmationsDict)
-    # print(a)
     a.to_excel("160Affirmations.xlsx")
 
 
