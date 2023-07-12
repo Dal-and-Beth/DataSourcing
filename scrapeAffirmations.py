@@ -4,6 +4,7 @@ import requests
 import json
 import pandas as pd
 from selenium import webdriver
+import re
 
 
 URL1 = "https://www.scienceofpeople.com/positive-affirmations/"
@@ -56,5 +57,26 @@ def scrape160():
     a.to_excel("160Affirmations.xlsx")
 
 
+def scrape99():
+    dr = webdriver.Chrome()
+    dr.get(URL3)
+    soup = BeautifulSoup(dr.page_source, "html.parser")
+    print(soup)
+    pattern = re.compile(r"\d+\.")
+    affirmations = soup.find_all("p", string=pattern)
+    print(affirmations)
+
+    data = []
+    for affirmation in affirmations:
+        line = affirmation.text.strip()
+        line = re.sub("\d+\.", "", line)
+        print(line)
+        data.append(line)
+
+    df = pd.DataFrame(data, columns=["General Affirmations"])
+    df.to_excel("99Affirmations.xlsx")
+
+
 scrape270()
 scrape160()
+scrape99()
