@@ -15,13 +15,11 @@ def putIntoDB(db):
 
     for key in df270dict:
         for value in df270dict[key]:
-            # print(key, value)
             db.put({"category": key, "text": value})
 
     for key in df160dict:
         for value in df160dict[key]:
             if pd.isna(value) != True:
-                # print(key, value)
                 db.put({"category": key, "text": value})
 
 
